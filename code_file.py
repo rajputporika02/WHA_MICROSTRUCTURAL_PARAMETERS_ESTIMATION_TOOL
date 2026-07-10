@@ -421,8 +421,14 @@ if check_condition==1:
     allsegment[seg1]=(1,0,0)
     allsegment[seg2]=(0,1,0)
     plt.imsave(f"{z}_thresh_seg.png",allsegment)
-    
-    print("The percentage of tungsten is :",(np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0)))#true and false 0 ,1
+    vf = (np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0))
+
+    print("The percentage of tungsten is :", vf)
+
+    # save to text file
+    with open(f"{z}_volume_fraction.txt", "w") as f:
+        f.write(f"Volume fraction of tungsten (%) : {vf}\n")
+        
     
     
     
@@ -1069,6 +1075,7 @@ if check_condition==1:
         if moments['m00'] != 0:
             x, y, w, h = cv2.boundingRect(contour)
             major_diameter = max(w, h) * conversion_factor  # Major diameter in µm
+            minor_diameter = min(w, h) * conversion_factor  # Major diameter in µm
             area_um2 = cv2.contourArea(contour) * conversion_factor ** 2
             perimeter_um = cv2.arcLength(contour, True) * conversion_factor
             particle_edge_um = area_um2 ** 0.5  # Corrected to compute the square root of area_um2
@@ -1083,6 +1090,7 @@ if check_condition==1:
                 'Area (µm²)': round(area_um2, 2),
                 'Perimeter (µm)': round(perimeter_um, 2),
                 'Major Diameter (µm)': round(major_diameter, 2),
+                'Minor Diameter (µm)': round(minor_diameter, 2),
                 'Particle Edge (µm)': round(particle_edge_um, 2),
                 'Circularity (µm)': round(circularity_um, 2)
             })
@@ -1702,6 +1710,41 @@ if check_condition==1:
     #cv2.imshow("image",thinned_image)
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
+    
+    
+    
+    
+    import cv2
+    import numpy as np
+    import pandas as pd
+
+    # ---- Parameters ----
+    pixel_per_um = croped_img_scale_length / croped_img_scale_um
+    um_per_pixel = 1 / pixel_per_um  # µm per pixel
+
+    # ---- Load Image ----
+    img = cv2.imread(f"{z}_grains_neck_ex_thin.png", cv2.IMREAD_GRAYSCALE)
+
+    # Threshold to binary (white = 255, black = 0)
+    _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+
+    # ---- Find connected white regions ----
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(binary, connectivity=8)
+
+    lengths_um = []
+
+    for i in range(1, num_labels):  # skip background (label 0)
+        # number of pixels in this component
+        num_pixels = stats[i, cv2.CC_STAT_AREA]
+        
+        # convert to micrometers
+        length_um = num_pixels * um_per_pixel
+        lengths_um.append(length_um)
+
+    # ---- Save to Excel ----
+    df = pd.DataFrame({"Neck Length (µm)": lengths_um})
+    df.index += 1  # start index from 1
+    df.to_excel(f"{z}_individual_neck_lengths.xlsx", index_label="ID")
 
 
 
@@ -3400,6 +3443,12 @@ if check_condition==1:
         
         print("---------------------------------------------------------------------------------")
         
+        vf = (np.sum(seg222==1)*100)/(np.sum(seg222==1)+np.sum(seg222==0))#true and false 0 ,1
+
+        # save to text file
+        with open(f"{z}_volume_fraction_precipitates.txt", "w") as f:
+            f.write(f"Volume fraction of tungsten precipitates (%) : {vf}\n")
+        
         
         print("The percentage of tungsten is :",(np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0)))
         print("The percentage of Tungsten precipitates is :",(np.sum(seg222==1)*100)/(np.sum(seg222==1)+np.sum(seg222==0)))#true and false 0 ,1
@@ -3851,6 +3900,11 @@ if check_condition==1:
         
         
         print("---------------------------------------------------------------------------------")
+        vf = (np.sum(seg222==1)*100)/(np.sum(seg222==1)+np.sum(seg222==0))#true and false 0 ,1
+
+        # save to text file
+        with open(f"{z}_volume_fraction_precipitates.txt", "w") as f:
+            f.write(f"Volume fraction of tungsten precipitates (%) : {vf}\n")
         
         
         print("The percentage of tungsten is :",(np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0)))
@@ -4278,7 +4332,11 @@ else:
     
     print("The percentage of tungsten is :",(np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0)))#true and false 0 ,1
     
-    
+    vf = (np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0))
+
+    # save to text file
+    with open(f"{z}_volume_fraction.txt", "w") as f:
+        f.write(f"Volume fraction of tungsten (%) : {vf}\n")
     
     
     import cv2
@@ -4921,6 +4979,7 @@ else:
         if moments['m00'] != 0:
             x, y, w, h = cv2.boundingRect(contour)
             major_diameter = max(w, h) * conversion_factor  # Major diameter in µm
+            minor_diameter = min(w, h) * conversion_factor  # Major diameter in µm
             area_um2 = cv2.contourArea(contour) * conversion_factor ** 2
             perimeter_um = cv2.arcLength(contour, True) * conversion_factor
             particle_edge_um = area_um2 ** 0.5  # Corrected to compute the square root of area_um2
@@ -4935,6 +4994,7 @@ else:
                 'Area (µm²)': round(area_um2, 2),
                 'Perimeter (µm)': round(perimeter_um, 2),
                 'Major Diameter (µm)': round(major_diameter, 2),
+                'Minor Diameter (µm)': round(minor_diameter, 2),
                 'Particle Edge (µm)': round(particle_edge_um, 2),
                 'Circularity (µm)': round(circularity_um, 2)
             })
@@ -5555,6 +5615,38 @@ else:
     #cv2.imshow("image",thinned_image)
     ##cv2.waitKey(0)
     #cv2.destroyAllWindows()
+    
+    import cv2
+    import numpy as np
+    import pandas as pd
+
+    # ---- Parameters ----
+    pixel_per_um = croped_img_scale_length / croped_img_scale_um
+    um_per_pixel = 1 / pixel_per_um  # µm per pixel
+
+    # ---- Load Image ----
+    img = cv2.imread(f"{z}_grains_neck_ex_thin.png", cv2.IMREAD_GRAYSCALE)
+
+    # Threshold to binary (white = 255, black = 0)
+    _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+
+    # ---- Find connected white regions ----
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(binary, connectivity=8)
+
+    lengths_um = []
+
+    for i in range(1, num_labels):  # skip background (label 0)
+        # number of pixels in this component
+        num_pixels = stats[i, cv2.CC_STAT_AREA]
+        
+        # convert to micrometers
+        length_um = num_pixels * um_per_pixel
+        lengths_um.append(length_um)
+
+    # ---- Save to Excel ----
+    df = pd.DataFrame({"Neck Length (µm)": lengths_um})
+    df.index += 1  # start index from 1
+    df.to_excel(f"{z}_individual_neck_lengths.xlsx", index_label="ID")
 
 
 
@@ -7254,6 +7346,12 @@ else:
         
         print("---------------------------------------------------------------------------------")
         
+        vf = (np.sum(seg222==1)*100)/(np.sum(seg222==1)+np.sum(seg222==0))#true and false 0 ,1
+
+        # save to text file
+        with open(f"{z}_volume_fraction_precipitates.txt", "w") as f:
+            f.write(f"Volume fraction of tungsten precipitates (%) : {vf}\n")
+        
         
         print("The percentage of tungsten is :",(np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0)))
         print("The percentage of Tungsten precipitates is :",(np.sum(seg222==1)*100)/(np.sum(seg222==1)+np.sum(seg222==0)))#true and false 0 ,1
@@ -7706,6 +7804,11 @@ else:
         
         
         print("---------------------------------------------------------------------------------")
+        vf = (np.sum(seg222==1)*100)/(np.sum(seg222==1)+np.sum(seg222==0))#true and false 0 ,1
+
+        # save to text file
+        with open(f"{z}_volume_fraction_precipitates.txt", "w") as f:
+            f.write(f"Volume fraction of tungsten precipitates (%) : {vf}\n")
         
         
         print("The percentage of tungsten is :",(np.sum(seg2==1)*100)/(np.sum(seg2==1)+np.sum(seg2==0)))
