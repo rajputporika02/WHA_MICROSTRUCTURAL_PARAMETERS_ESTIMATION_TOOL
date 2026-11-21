@@ -226,7 +226,7 @@ The same research work was published in the **International Journal of Refractor
 - **Journal:** International Journal of Refractory Metals and Hard Materials
 - **Year / Volume / Pages:** [Volume 138, August 2026, 107719]
 - **DOI:** [https://doi.org/10.1016/j.ijrmhm.2026.107719]
-- **Publisher page:** [https://www.sciencedirect.com/science/article/abs/pii/S0263436826000697]
+- **Publisher page:** [https://www.sciencedirect.com/journal/international-journal-of-refractory-metals-and-hard-materials]
 
 ### Research conclusion
 
