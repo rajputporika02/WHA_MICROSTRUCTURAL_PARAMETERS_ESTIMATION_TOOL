@@ -33,7 +33,8 @@ Tungsten heavy alloys (WHAs) are used in defence, aerospace, and radiation-shiel
 
 Traditional manual microstructural analysis is time-consuming. This research focused on automating the analysis of SEM micrographs using image processing and deep learning.
 
-![WHA grayscale SEM microstructure](assets/image1.png)
+![WHA grayscale SEM microstructure](![Uploading image.png…]()
+)
 
 *Grayscale SEM microstructure of a tungsten heavy alloy.*
 
