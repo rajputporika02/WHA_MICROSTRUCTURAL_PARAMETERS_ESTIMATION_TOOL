@@ -33,8 +33,7 @@ Tungsten heavy alloys (WHAs) are used in defence, aerospace, and radiation-shiel
 
 Traditional manual microstructural analysis is time-consuming. This research focused on automating the analysis of SEM micrographs using image processing and deep learning.
 
-![WHA grayscale SEM microstructure](![Uploading image.png…]()
-)
+<img width="312" height="237" alt="image" src="https://github.com/user-attachments/assets/d475ca0b-159a-4af9-bc19-fbafa77b9ed8" />
 
 *Grayscale SEM microstructure of a tungsten heavy alloy.*
 
@@ -68,13 +67,11 @@ The initial dataset consisted of **six original grayscale SEM images** of WHA.
 5. **Augmentation:** The annotated data was augmented to obtain 12,000 images.
 6. **Dataset split:** 90% (10,800 images) for training and 10% (1,200 images) for validation.
 
-![Binary image after thresholding](assets/image6.png)
+<img width="201" height="155" alt="image" src="https://github.com/user-attachments/assets/4366ad1c-3398-4a0e-95a0-0cf61e2c2f00" />
 
 *Binary image: tungsten grains are white and matrix regions are black.*
 
-![Canny edge detection](assets/image7.png)
 
-*Grain perimeter boundaries extracted using edge detection.*
 
 ## Image-Processing Pipeline
 
@@ -87,7 +84,7 @@ Canny edge detection was applied to the binarized image to identify the perimete
 ### Ground-truth annotation
 The W–W interfaces were manually annotated using ImageJ on the edge-detected images. These annotations were used as ground-truth masks for supervised U-Net training.
 
-![Overall WHA image-analysis workflow](assets/image8.png)
+<img width="682" height="442" alt="image" src="https://github.com/user-attachments/assets/3713ee5f-346f-44bd-989d-e1bb1cc0f61c" />
 
 *Image-analysis workflow showing grayscale input, binarization, phase segmentation, overlay, predicted boundary map, and average contiguity calculation.*
 
@@ -95,7 +92,7 @@ The W–W interfaces were manually annotated using ImageJ on the edge-detected i
 
 A U-Net model was selected because the task requires **pixel-level segmentation and precise boundary localization**. The encoder learns contextual features while progressively reducing spatial resolution. The decoder restores spatial resolution, and skip connections transfer fine-grained spatial information from encoder layers to decoder layers.
 
-![U-Net architecture](assets/image5.png)
+<img width="703" height="465" alt="image" src="https://github.com/user-attachments/assets/daf98184-4c17-4220-af35-3b93f728bf78" />
 
 *U-Net encoder–decoder architecture with skip connections.*
 
@@ -125,10 +122,8 @@ The model produces a single-channel probability map. Each output pixel has a val
 
 Intersection over Union (IoU) compares the predicted foreground boundary pixels with the ground-truth foreground pixels:
 
-\[
-IoU = \frac{|Y_{\mathrm{true}} \cap Y_{\mathrm{pred}}|}
-{|Y_{\mathrm{true}} \cup Y_{\mathrm{pred}}|}
-\]
+<img width="2169" height="725" alt="image" src="https://github.com/user-attachments/assets/1a7b963b-2de7-4778-9de4-401b368db72d" />
+
 
 The ground-truth mask contains binary values (0 and 1). The predicted probability map is thresholded at 0.5 to produce a Boolean mask. Logical AND gives the intersection, and logical OR gives the union. Summing the resulting Boolean arrays counts the pixels in each set.
 
@@ -144,25 +139,14 @@ Contiguity quantifies the degree of contact between tungsten grains in a tungste
 
 **Method 1 — Line-intercept method**
 
-\[
-C_{WW} = \frac{2N_{WW}}{2N_{WW}+N_{WM}}
-\]
-
-where \(N_{WW}\) is the number of tungsten–tungsten interfaces and \(N_{WM}\) is the number of tungsten–matrix interfaces. These values are obtained using the line-intercept method applied to SEM images.
+<img width="697" height="168" alt="image" src="https://github.com/user-attachments/assets/ea71ec73-c123-4169-8e75-0a8c9131a0c4" />
 
 **Method 2 — Grain-wise neck-length method**
 
-\[
-C_i = \frac{A_1+A_2+A_3}{P_i}
-\]
+<img width="712" height="166" alt="image" src="https://github.com/user-attachments/assets/c3292429-e0e3-45e1-9bc6-7315d1a9469d" />
 
-where \(A_1\), \(A_2\), and \(A_3\) are the neck lengths shared with adjacent tungsten grains, and \(P_i\) is the total perimeter of the grain. This method estimates contiguity individually for each grain.
 
-![Contiguity measurement illustration](assets/image9.png)
-
-*Overlay, grain selection, perimeter measurement, and W–W neck-length identification.*
-
-![Grain-wise contiguity analysis](assets/image10.png)
+<img width="695" height="307" alt="image" src="https://github.com/user-attachments/assets/ad89b818-926b-4f57-913b-f339b68ad479" />
 
 *Illustrative stages of selecting tungsten grains and measuring shared neck lengths for grain-wise contiguity.*
 
@@ -170,55 +154,46 @@ where \(A_1\), \(A_2\), and \(A_3\) are the neck lengths shared with adjacent tu
 
 The dihedral angle is measured at the cusp point between two tungsten grains. The method involves identifying the W–W interface, locating the cusp point, and determining the two tangent directions along the adjoining grain boundaries.
 
+<img width="441" height="503" alt="image" src="https://github.com/user-attachments/assets/36d832bb-fea0-4a21-b81c-84ffc1ff9179" />
+
+
 ### 3. Tungsten volume fraction
 
-The tungsten volume fraction is estimated from the ratio of tungsten pixels to the total number of image pixels:
-
-\[
-V_W(\%) =
-\frac{\text{Number of tungsten pixels}}
-{\text{Total number of image pixels}}\times 100
-\]
-
-![Phase segmentation and volume-fraction analysis](assets/image11.png)
-
-*Overlay and phase analysis used for tungsten volume-fraction estimation.*
+The tungsten volume fraction is estimated from the ratio of tungsten pixels to the total number of image pixels
 
 ### 4. Tungsten grain size and size distribution
 
 The equivalent circular diameter is calculated from the measured area of an individual tungsten grain:
 
-\[
-D_{\mathrm{eq}} = \sqrt{\frac{4A}{\pi}}
-\]
+<img width="162" height="92" alt="image" src="https://github.com/user-attachments/assets/2ffc4197-4f22-4aed-9f76-fa2ebaef0988" />
 
-where \(A\) is the area of the grain. The equivalent diameters are used to obtain the grain-size distribution.
 
-![Grain-size distribution](assets/image14.png)
+where (A) is the area of the grain. The equivalent diameters are used to obtain the grain-size distribution.
 
-*Grain-size distribution plots.*
+<img width="531" height="177" alt="image" src="https://github.com/user-attachments/assets/71868e5a-cfe6-4d75-93f1-687e55b93ff3" />
+
+*Grain-size distribution plot.*
 
 ### 5. Tungsten precipitate size
 
 The workflow also includes identifying tungsten precipitates and measuring their sizes to obtain precipitate-size statistics and distributions.
 
-![Precipitate size analysis](assets/image12.png)
+<img width="577" height="190" alt="image" src="https://github.com/user-attachments/assets/349efd7f-31c2-4c18-86fb-53fc5d928c05" />
 
 *SEM micrograph, selected precipitates, and precipitate-size distribution.*
 
 ## Evaluation and Validation
 
-The project notes state that automated measurements were validated against manual measurements and literature data.
+The automated measurements were validated against manual measurements and literature data.
 
 The supplied document includes a table comparing manual and automated measurements for parameters such as contiguity, dihedral angle, sphericity, average W grain size, and W volume fraction.
 
-![Manual and automated measurement comparison](assets/image13.png)
+<img width="415" height="295" alt="image" src="https://github.com/user-attachments/assets/6b21b523-2d69-42f1-afb3-3853bba32d92" />
 
 *Summary table of manual and automated measurements.*
 
-The document also includes plots comparing measured parameter values with reference/literature values.
 
-![Comparison plots for microstructural parameters](assets/image15.png)
+<img width="628" height="476" alt="image" src="https://github.com/user-attachments/assets/a16e5830-b7b8-4c99-8a80-d54aeea368f3" />
 
 *Comparison plots for contiguity, dihedral angle, grain size, and volume fraction.*
 
@@ -235,7 +210,7 @@ The reported conclusion is that the integrated framework can characterize import
 
 ## Impact and Applications
 
-The work contributed to a Python-based WHA microstructural characterization tool reported in the project document as being regularly used in DMRL as part of a DRDO-funded research project.
+The work contributed to a Python-based WHA microstructural characterization tool as being regularly used in DMRL as part of a DRDO-funded research project.
 
 According to the project notes, a grayscale WHA SEM micrograph (example input size: 1024 × 768) can be supplied to the tool to calculate the important microstructural parameters in approximately **120 seconds**. The notes contrast this with more than an hour for an individual performing the analysis manually.
 
@@ -243,51 +218,20 @@ Potential application areas include defence, aerospace, radiation shielding, and
 
 ## Journal Publication
 
-The same research work was published in the **International Journal of Refractory Metals and Hard Materials**, as stated in the supplied document.
+The same research work was published in the **International Journal of Refractory Metals and Hard Materials**.
 
-The resume document does not provide the exact paper title, full published author list, year, volume, page range, or DOI. Insert the verified citation details here rather than guessing:
 
-- **Paper title:** [Insert exact published title]
-- **Authors:** [Insert author list in published order]
+- **Paper title:** [Deep learning-driven automated microstructural quantification in tungsten heavy alloys using U-net segmentation and image processing]
+- **Authors:** [<img width="770" height="28" alt="image" src="https://github.com/user-attachments/assets/57b41b49-df16-44f4-a5cc-1ad2b4f66518" />]
 - **Journal:** International Journal of Refractory Metals and Hard Materials
-- **Year / Volume / Pages:** [Insert publication details]
-- **DOI:** [Insert DOI]
-- **Publisher page:** [Insert article URL]
+- **Year / Volume / Pages:** [Volume 138, August 2026, 107719]
+- **DOI:** [https://doi.org/10.1016/j.ijrmhm.2026.107719]
+- **Publisher page:** [https://www.sciencedirect.com/science/article/abs/pii/S0263436826000697]
 
 ### Research conclusion
 
-The supplied project document describes an automated image-analysis framework integrating digital image processing and deep learning to characterize WHA microstructures. It reports estimation of contiguity, dihedral angle, tungsten grain size, sphericity, tungsten volume fraction, and tungsten precipitate size directly from SEM images. The workflow combines Otsu thresholding, Canny edge detection, and U-Net-based segmentation, and the reported measurements showed strong agreement with manual results.
+The automated image-analysis framework integrating digital image processing and deep learning to characterize WHA microstructures. It reports estimation of contiguity, dihedral angle, tungsten grain size, sphericity, tungsten volume fraction, and tungsten precipitate size directly from SEM images. The workflow combines Otsu thresholding, Canny edge detection, and U-Net-based segmentation, and the reported measurements showed strong agreement with manual results.
 
-## Repository Contents
-
-```text
-WHA_Microstructure_Analysis/
-├── README.md
-└── assets/
-    ├── image1.png
-    ├── image2.png
-    ├── image3.png
-    ├── image4.png
-    ├── image5.png
-    ├── image6.png
-    ├── image7.png
-    ├── image8.png
-    ├── image9.png
-    ├── image10.png
-    ├── image11.png
-    ├── image12.png
-    ├── image13.png
-    ├── image14.png
-    ├── image15.png
-    ├── image16.png
-    ├── image17.png
-    ├── image18.png
-    ├── image19.png
-    ├── image20.png
-    └── image21.png
-```
-
-**Image note:** All **21 embedded images** from the supplied Word document are preserved in `assets/`. The README embeds the figures relevant to the WHA internship and publication (images 1 and 5–15). The remaining images (2–4 and 16–21) are also included so no embedded source image is lost; they are not inserted into the WHA research narrative where they would be unrelated to this project.
 
 ## Tools and Technologies
 
@@ -297,8 +241,7 @@ WHA_Microstructure_Analysis/
 - **OpenCV / Image Processing** — image processing operations
 - **NumPy** — array-based image and mask operations
 - **ImageJ** — manual ground-truth annotation
-
-The supplied document does not specify exact package versions or a complete dependency list.
+- 
 
 ## Acknowledgement
 
